@@ -3,8 +3,12 @@
 A  client library for OAuth2 authentication.
 Allows to authorize HTTP requests using a token fetched from a token endpoint.
 
+Only limited testing with a Sharepoint site was done.
+
+## Example
 ```
 | settings authenticator accessToken tokenRequest request |
+" configure"
 settings := OAuth2.Settings new.
 settings tokenEndpoint: 'https://login.windows.net/someTenant/oauth2/token'.
 authenticator := OAuth2.Authenticator fromSettings: settings.

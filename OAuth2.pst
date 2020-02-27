@@ -36,18 +36,23 @@ accessToken := authenticator obtainAccessToken: tokenRequest.
 " authorize the actual request "
 request := Net.HttpRequest get: 'https://someTenant.sharepoint.com/sites/sampleSite/_api/lists'.
 accessToken authenticateRequest: request
-DevelopmentPrerequisites: #(#(#any 'HTTP' '') #(#any 'MIME' '') #(#any 'NetClientBase' '') #(#any 'Xtreams-Transforms' '') #(#any 'URISupport' ''))
-KSignature: #('definedClasses' 16 'definedClassesHash' 11927611611 'extendedClasses' 2 'extendedClassesHash' 194457861)
-KSignatureV2: #('definedClasses' 16 'definedClassesHash' 144841079617945441119022672136233174555033790151 'extendedClasses' 2 'extendedClassesHash' 1251426569421109291608418219821032619095303082652)
+
+
+The settings can be loaded from a configuration URL:
+
+OAuth2.Settings newFromConfigurationURL: 'https://login.windows.net/common/.well-known/openid-configuration'
+DevelopmentPrerequisites: #(#(#any 'HTTP' '') #(#any 'MIME' '') #(#any 'NetClientBase' '') #(#any 'Xtreams-Transforms' '') #(#any 'URISupport' '') #(#any 'HTTPS' ''))
+KSignature: #('definedClasses' 16 'definedClassesHash' 12137333076 'extendedClasses' 2 'extendedClassesHash' 194457861)
+KSignatureV2: #('definedClasses' 16 'definedClassesHash' 998423664058852518362555693679500372435586559768 'extendedClasses' 2 'extendedClassesHash' 1251426569421109291608418219821032619095303082652)
 PackageName: OAuth2
 Parcel: #('OAuth2')
 ParcelDirectory: OAuth2
-PrerequisiteDescriptions: #(#(#name 'HTTP' #componentType #package) #(#name 'MIME' #componentType #package) #(#name 'NetClientBase' #componentType #package) #(#name 'Xtreams-Transforms' #componentType #package) #(#name 'URISupport' #componentType #package))
-PrerequisiteParcels: #(#('HTTP' '') #('MIME' '') #('NetClientBase' '') #('Xtreams-Transforms' '') #('URISupport' ''))
-Version: 2.0.5
-Date: 7:22:13 PM February 27, 2020
+PrerequisiteDescriptions: #(#(#name 'HTTP' #componentType #package) #(#name 'MIME' #componentType #package) #(#name 'NetClientBase' #componentType #package) #(#name 'Xtreams-Transforms' #componentType #package) #(#name 'URISupport' #componentType #package) #(#name 'HTTPS' #componentType #package))
+PrerequisiteParcels: #(#('HTTP' '') #('MIME' '') #('NetClientBase' '') #('Xtreams-Transforms' '') #('URISupport' '') #('HTTPS' ''))
+Version: 2.0.5.public.3
+Date: 7:43:40 PM February 27, 2020
  -->
-<time-stamp>From VisualWorks®, 8.3.2 of 16. November 2018 on 27. Februar 2020 at 19:22:13</time-stamp>
+<time-stamp>From VisualWorks®, 8.3.2 of 16. November 2018 on 27. Februar 2020 at 19:43:40</time-stamp>
 
 
 <do-it>(Dialog confirm: 'You are filing-in a Parcel source file!\\While this is possible it will not have\the same effect as loading the parcel.\None of the Parcel''s prerequisites will\be loaded and none of its load actions\will be performed.\\Are you sure you want to file-in?' withCRs) ifFalse: [self error: 'Parcel file-in abandoned.  Choose terminate or close.']</do-it>
@@ -495,6 +500,24 @@ Date: 7:22:13 PM February 27, 2020
 <body package="OAuth2">tokenEndpoint	^ self propertyAt: #'token_endpoint'</body>
 
 <body package="OAuth2">tokenEndpoint: aString	self propertyAt: #'token_endpoint' put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Settings</class-id> <category>openid</category>
+
+<body package="OAuth2">loadConfigurationFrom: configurationURL 	" load configuration from: https://domain/.../.well-known/openid-configuration "	| configData | 	[	configData := self getConfigJsonFromUrl: configurationURL.		self initializeFromDictionary: configData.	] 		on: Net.HttpException		do: [: ex | OAuth2Error raiseSignal: 'Could not load configuration: ' , ex description ].</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Settings</class-id> <category>private</category>
+
+<body package="OAuth2">getConfigJsonFromUrl: configurationURL 	| configResponse url |	url := configurationURL asURI.	url protocol = Net.HttpsURL protocol 		ifFalse: [ OAuth2Error raiseSignal: 'Configuration must be loaded from a https URL' ].	configResponse :=		[ Net.HttpClient get: url ] 			on: Net.NetError , OS.OsError			do: [: ex | OAuth2Error raiseSignal: 'Could not load configuration: ' , ex description ].	^ Xtreams.JSON decode: configResponse contents</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Settings class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">newFromConfigurationURL: configurationURL 	^ self new loadConfigurationFrom: configurationURL ; yourself</body>
 </methods>
 
 <methods>

@@ -19,3 +19,10 @@ accessToken := authenticator obtainAccessToken: tokenRequest.
 request := Net.HttpRequest get: 'https://someTenant.sharepoint.com/sites/sampleSite/_api/lists'.
 accessToken authenticateRequest: request
 ```
+
+## Configuration discovery
+
+The settings can be loaded from a configuration URL:
+```
+OAuth2.Settings newFromConfigurationURL: 'https://login.windows.net/common/.well-known/openid-configuration'
+```

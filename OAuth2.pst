@@ -1,0 +1,730 @@
+<?xml version="1.0"?>
+
+<st-source>
+<!-- 
+Name: OAuth2
+Notice: The MIT License
+
+Copyright (c) 2019 intelligent views gmbh
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+Comment: OAuth2 client library. Allows to authorize HTTP client requests using a token fetched from a token endpoint.
+
+| settings authenticator accessToken tokenRequest request |
+settings := OAuth2.Settings new.
+settings tokenEndpoint: 'https://login.windows.net/someTenant/oauth2/token'.
+authenticator := OAuth2.Authenticator fromSettings: settings.
+" obtain a token (see subclasses of TokenRequest for alternative methods to get a token) "
+tokenRequest :=  OAuth2.ClientCredentialsTokenRequest clientId: 'sampleClientId' secret: 'sampleSecret'.
+accessToken := authenticator obtainAccessToken: tokenRequest.
+" authorize the actual request "
+request := Net.HttpRequest get: 'https://someTenant.sharepoint.com/sites/sampleSite/_api/lists'.
+accessToken authenticateRequest: request
+DevelopmentPrerequisites: #(#(#any 'HTTP' '') #(#any 'MIME' '') #(#any 'NetClientBase' '') #(#any 'Xtreams-Transforms' '') #(#any 'URISupport' ''))
+KSignature: #('definedClasses' 16 'definedClassesHash' 11927611611 'extendedClasses' 2 'extendedClassesHash' 194457861)
+KSignatureV2: #('definedClasses' 16 'definedClassesHash' 144841079617945441119022672136233174555033790151 'extendedClasses' 2 'extendedClassesHash' 1251426569421109291608418219821032619095303082652)
+PackageName: OAuth2
+Parcel: #('OAuth2')
+ParcelDirectory: OAuth2
+PrerequisiteDescriptions: #(#(#name 'HTTP' #componentType #package) #(#name 'MIME' #componentType #package) #(#name 'NetClientBase' #componentType #package) #(#name 'Xtreams-Transforms' #componentType #package) #(#name 'URISupport' #componentType #package))
+PrerequisiteParcels: #(#('HTTP' '') #('MIME' '') #('NetClientBase' '') #('Xtreams-Transforms' '') #('URISupport' ''))
+Version: 2.0.5
+Date: 7:22:13 PM February 27, 2020
+ -->
+<time-stamp>From VisualWorks®, 8.3.2 of 16. November 2018 on 27. Februar 2020 at 19:22:13</time-stamp>
+
+
+<do-it>(Dialog confirm: 'You are filing-in a Parcel source file!\\While this is possible it will not have\the same effect as loading the parcel.\None of the Parcel''s prerequisites will\be loaded and none of its load actions\will be performed.\\Are you sure you want to file-in?' withCRs) ifFalse: [self error: 'Parcel file-in abandoned.  Choose terminate or close.']</do-it>
+
+<name-space>
+<name>OAuth2</name>
+<environment>Smalltalk</environment>
+<private>false</private>
+<imports>
+			private Xtreams.*
+			private Core.*
+			</imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</name-space>
+
+<class>
+<name>MarshableObject</name>
+<environment>OAuth2</environment>
+<super>Core.Object</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars>properties </inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<comment>
+<class-id>OAuth2.MarshableObject</class-id>
+<body>Dictionary-like object that can be (un)marshaled from/to JSON objects, URL query parameters or form-encoded HTTP requests</body>
+</comment>
+
+<class>
+<name>TokenRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.MarshableObject</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>RefreshTokenRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.TokenRequest</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>CodeTokenRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.TokenRequest</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>Authenticator</name>
+<environment>OAuth2</environment>
+<super>Core.Object</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars>settings </inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>AccessToken</name>
+<environment>OAuth2</environment>
+<super>OAuth2.MarshableObject</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars>receiveTimestamp </inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>OAuth2Error</name>
+<environment>OAuth2</environment>
+<super>Core.Error</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>Settings</name>
+<environment>OAuth2</environment>
+<super>OAuth2.MarshableObject</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars>certificateRegistry </inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>AuthorizationRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.MarshableObject</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>CodeAuthorizationRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.AuthorizationRequest</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>ImplicitGrantRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.AuthorizationRequest</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>AuthorizationResponse</name>
+<environment>OAuth2</environment>
+<super>OAuth2.MarshableObject</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>CodeAuthorizationResponse</name>
+<environment>OAuth2</environment>
+<super>OAuth2.AuthorizationResponse</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>AuthorizationErrorResponse</name>
+<environment>OAuth2</environment>
+<super>OAuth2.MarshableObject</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>PasswordTokenRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.TokenRequest</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<class>
+<name>ClientCredentialsTokenRequest</name>
+<environment>OAuth2</environment>
+<super>OAuth2.TokenRequest</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category></category>
+<attributes>
+<package>OAuth2</package>
+</attributes>
+</class>
+
+<methods>
+<class-id>OAuth2.MarshableObject</class-id> <category>private</category>
+
+<body package="OAuth2">propertyAt: aKey	^ properties at: aKey asSymbol ifAbsent: [ nil ]</body>
+
+<body package="OAuth2">propertyAt: aKey put: aValue 	aValue notNil 		ifTrue: [ properties at: aKey asSymbol put: aValue ]		ifFalse: [ properties removeKey: aKey asSymbol ifAbsent: [ ]].</body>
+
+<body package="OAuth2">streamingWriteJSONOn: stream 	^ properties streamingWriteJSONOn: stream</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.MarshableObject</class-id> <category>initialize-release</category>
+
+<body package="OAuth2">initialize	properties := Dictionary new.</body>
+
+<body package="OAuth2">initializeFromDictionary: propertiesDictionary 	propertiesDictionary keysAndValuesDo: [: k : v | self propertyAt: k put: v ].</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.MarshableObject</class-id> <category>converting</category>
+
+<body package="OAuth2">asDictionary	^ properties</body>
+
+<body package="OAuth2">asJSON	^ Xtreams.JSON encode: self</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.MarshableObject class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">fromDictionary: aDictionary	^ self new initializeFromDictionary: aDictionary</body>
+
+<body package="OAuth2">fromJsonString: aJsonString	^ self fromDictionary: ( JSON decode: aJsonString)</body>
+
+<body package="OAuth2">new	^ super new initialize</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.TokenRequest</class-id> <category>initialize-release</category>
+
+<body package="OAuth2">initialize	super initialize.	self propertyAt: #'grant_type' put: self grantType.</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.TokenRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">grantType	self subclassResponsibility</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.RefreshTokenRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">clientId	^ self propertyAt: #'client_id'</body>
+
+<body package="OAuth2">clientId: aString	self propertyAt: #'client_id' put: aString</body>
+
+<body package="OAuth2">clientSecret	^ self propertyAt: #'client_secret'</body>
+
+<body package="OAuth2">clientSecret: aString	self propertyAt: #'client_secret' put: aString</body>
+
+<body package="OAuth2">grantType	^ 'refresh_token'</body>
+
+<body package="OAuth2">refreshToken	^ self propertyAt: #'refresh_token'</body>
+
+<body package="OAuth2">refreshToken: aToken	self propertyAt: #'refresh_token' put: aToken</body>
+
+<body package="OAuth2">scope	^ self propertyAt: #scope</body>
+
+<body package="OAuth2">scope: aScope 	self propertyAt: #scope put: aScope</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.RefreshTokenRequest class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">refreshToken: aToken 	^ self new refreshToken: aToken;		yourself</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.CodeTokenRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">clientId	^ self propertyAt: #'client_id'</body>
+
+<body package="OAuth2">clientId: aString	self propertyAt: #'client_id' put: aString</body>
+
+<body package="OAuth2">clientSecret	^ self propertyAt: #'client_secret'</body>
+
+<body package="OAuth2">clientSecret: aString	self propertyAt: #'client_secret' put: aString</body>
+
+<body package="OAuth2">code	^ self propertyAt: #code</body>
+
+<body package="OAuth2">code: aCode 	^ self propertyAt: #code put: aCode</body>
+
+<body package="OAuth2">grantType	^ 'authorization_code'</body>
+
+<body package="OAuth2">redirectUri	^ self propertyAt: #'redirect_uri'</body>
+
+<body package="OAuth2">redirectUri: aStringOrURL	self propertyAt: #'redirect_uri' put: (aStringOrURL ifNotNil: [ : s | s asString ])</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.CodeTokenRequest class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">code: aCode 	^ self new code: aCode;		yourself</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Authenticator</class-id> <category>accessing</category>
+
+<body package="OAuth2">settings	^ settings ifNil: [ settings := self settingsClass new ]</body>
+
+<body package="OAuth2">settings: aSettings 	settings := aSettings.</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Authenticator</class-id> <category>private</category>
+
+<body package="OAuth2">executeRequest: aRequest 	| client |	client := Net.HttpClient new.	^ [ client executeRequest: aRequest ] ensure: [ client close ]</body>
+
+<body package="OAuth2">settingsClass	^ Settings</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Authenticator</class-id> <category>authentication - requests</category>
+
+<body package="OAuth2">obtainAccessToken: tokenRequest 	" Request an access token from the authorization server "	| request response url newToken |	url := self settings tokenEndpoint.	url isNil 		ifTrue: [ OAuth2Error raiseSignal: 'Token endpoint not configured' ].	request := Net.HttpRequest post: url.	request oauth2FormData: tokenRequest asDictionary.	response := self executeRequest: request.	newToken := AccessToken fromJsonString: response contents.	newToken receiveTimestamp: Timestamp now.	^ newToken</body>
+
+<body package="OAuth2">refreshToken: accessToken clientId: clientId secret: secret	" Request a fresh access token from the authorization server "	| refreshRequest |	refreshRequest := RefreshTokenRequest refreshToken: accessToken refreshToken.	refreshRequest clientId: clientId.	refreshRequest clientSecret: secret.	^ self obtainAccessToken: refreshRequest</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Authenticator</class-id> <category>authentication - responses</category>
+
+<body package="OAuth2">codeAuthorizationResponseFromURI: authorizationURI 	" the query parameters of the redirected URI contain the information	to obtain a token, or an error.	Returns a response object "	| data error response |	data := Dictionary new.	authorizationURI asURI queryKeysAndValuesDo: [ : key : value |		data at: key put: value	].	( error := data at: 'error' ifAbsent: [ nil ]) notNil 		ifTrue: 		[	response := AuthorizationErrorResponse fromDictionary: data.			OAuth2Error raiseSignal: error with: response		].	^ CodeAuthorizationResponse fromDictionary: data.</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Authenticator class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">fromSettings: settings	^self new settings: settings; yourself</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.AccessToken</class-id> <category>authentication</category>
+
+<body package="OAuth2">authenticateRequest: httpRequest 	| token |	token := self token.	token isNil 		ifTrue: [ OAuth2Error raiseSignal: 'Invalid access token' ].	( httpRequest getFieldAt: 'authorization' ) addBearer: token.</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.AccessToken</class-id> <category>accessing</category>
+
+<body package="OAuth2">expiresIn	^ self propertyAt: #'expires_in'</body>
+
+<body package="OAuth2">expiryTimestamp	^ self expiresIn ifNotNil: [ : secondsString | self receiveTimestamp + (Integer readFrom: secondsString readStream) seconds ]</body>
+
+<body package="OAuth2">idToken	^ self propertyAt: #'id_token'</body>
+
+<body package="OAuth2">receiveTimestamp	^ receiveTimestamp</body>
+
+<body package="OAuth2">receiveTimestamp: aReceiveTimestamp 	receiveTimestamp := aReceiveTimestamp.</body>
+
+<body package="OAuth2">refreshToken	^ self propertyAt: #'refresh_token'</body>
+
+<body package="OAuth2">scope	^ self propertyAt: #scope</body>
+
+<body package="OAuth2">state	^ self propertyAt: #state</body>
+
+<body package="OAuth2">token	" the token string that is used in HTTP requests "		^ self propertyAt: #'access_token'</body>
+
+<body package="OAuth2">tokenType	^ self propertyAt: #'token_type'</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.Settings</class-id> <category>accessing</category>
+
+<body package="OAuth2">authorizationEndpoint	^ self propertyAt: #'authorization_endpoint'</body>
+
+<body package="OAuth2">authorizationEndpoint: aString	self propertyAt: #'authorization_endpoint' put: aString</body>
+
+<body package="OAuth2">certificateRegistry	^ certificateRegistry</body>
+
+<body package="OAuth2">certificateRegistry: aCertificateRegistry 	certificateRegistry := aCertificateRegistry</body>
+
+<body package="OAuth2">tokenEndpoint	^ self propertyAt: #'token_endpoint'</body>
+
+<body package="OAuth2">tokenEndpoint: aString	self propertyAt: #'token_endpoint' put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.AuthorizationRequest</class-id> <category>initialize-release</category>
+
+<body package="OAuth2">initialize	super initialize.	self propertyAt: #'response_type' put: self responseType.</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.AuthorizationRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">responseType	self subclassResponsibility</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.CodeAuthorizationRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">clientId	^ self propertyAt: #'client_id'</body>
+
+<body package="OAuth2">clientId: aString	self propertyAt: #'client_id' put: aString</body>
+
+<body package="OAuth2">redirectUri	^ self propertyAt: #'redirect_uri'</body>
+
+<body package="OAuth2">redirectUri: aStringOrURL	self propertyAt: #'redirect_uri' put: (aStringOrURL ifNotNil: [ : s | s asString ])</body>
+
+<body package="OAuth2">responseType	^ 'code'</body>
+
+<body package="OAuth2">scope	^ self propertyAt: #scope</body>
+
+<body package="OAuth2">scope: aScope 	self propertyAt: #scope put: aScope</body>
+
+<body package="OAuth2">state	^ self propertyAt: #state</body>
+
+<body package="OAuth2">state: aString	self propertyAt: #state put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.CodeAuthorizationRequest class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">clientId: aString	^ self new clientId: aString; yourself</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.ImplicitGrantRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">clientId	^ self propertyAt: #'client_id'</body>
+
+<body package="OAuth2">clientId: aString	self propertyAt: #'client_id' put: aString</body>
+
+<body package="OAuth2">redirectUri	^ self propertyAt: #'redirect_uri'</body>
+
+<body package="OAuth2">redirectUri: aStringOrURL	self propertyAt: #'redirect_uri' put: (aStringOrURL ifNotNil: [ : s | s asString ])</body>
+
+<body package="OAuth2">responseType	^ 'token'</body>
+
+<body package="OAuth2">scope	^ self propertyAt: #scope</body>
+
+<body package="OAuth2">scope: aScope 	self propertyAt: #scope put: aScope</body>
+
+<body package="OAuth2">state	^ self propertyAt: #state</body>
+
+<body package="OAuth2">state: aString	self propertyAt: #state put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.CodeAuthorizationResponse</class-id> <category>accessing</category>
+
+<body package="OAuth2">code	^ self propertyAt: #code</body>
+
+<body package="OAuth2">code: aCode 	^ self propertyAt: #code put: aCode</body>
+
+<body package="OAuth2">state	^ self propertyAt: #state</body>
+
+<body package="OAuth2">state: aString	self propertyAt: #state put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.AuthorizationErrorResponse</class-id> <category>accessing</category>
+
+<body package="OAuth2">description	^ self propertyAt: #error_description</body>
+
+<body package="OAuth2">description: aString	self propertyAt: #error_description put: aString</body>
+
+<body package="OAuth2">errorCode	^ self propertyAt: #error</body>
+
+<body package="OAuth2">errorCode: aString	self propertyAt: #error put: aString</body>
+
+<body package="OAuth2">state	^ self propertyAt: #state</body>
+
+<body package="OAuth2">state: aString	self propertyAt: #state put: aString</body>
+
+<body package="OAuth2">uri	^ self propertyAt: #'error_uri'</body>
+
+<body package="OAuth2">uri: aString	self propertyAt: #'error_uri' put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.PasswordTokenRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">clientId	^ self propertyAt: #'client_id'</body>
+
+<body package="OAuth2">clientId: aString	self propertyAt: #'client_id' put: aString</body>
+
+<body package="OAuth2">clientSecret	^ self propertyAt: #'client_secret'</body>
+
+<body package="OAuth2">clientSecret: aString	self propertyAt: #'client_secret' put: aString</body>
+
+<body package="OAuth2">grantType	^ 'password'</body>
+
+<body package="OAuth2">password	^ self propertyAt: #password</body>
+
+<body package="OAuth2">password: aPassword 	self propertyAt: #password put: aPassword</body>
+
+<body package="OAuth2">scope	^ self propertyAt: #scope</body>
+
+<body package="OAuth2">scope: aScope 	self propertyAt: #scope put: aScope</body>
+
+<body package="OAuth2">username	^ self propertyAt: #username</body>
+
+<body package="OAuth2">username: aUsername	self propertyAt: #username put: aUsername</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.PasswordTokenRequest class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">username: aUsername password: aPassword 	^ self new username: aUsername;		password: aPassword;		yourself</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.ClientCredentialsTokenRequest</class-id> <category>accessing - extra</category>
+
+<body package="OAuth2">resource	" https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow "	^ self propertyAt: #'resource'</body>
+
+<body package="OAuth2">resource: aString	" https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow "	self propertyAt: #'resource' put: aString</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.ClientCredentialsTokenRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">clientId	^ self propertyAt: #'client_id'</body>
+
+<body package="OAuth2">clientId: aString	self propertyAt: #'client_id' put: aString</body>
+
+<body package="OAuth2">clientSecret	^ self propertyAt: #'client_secret'</body>
+
+<body package="OAuth2">clientSecret: aString	self propertyAt: #'client_secret' put: aString</body>
+
+<body package="OAuth2">grantType	^ 'client_credentials'</body>
+</methods>
+
+<methods>
+<class-id>OAuth2.ClientCredentialsTokenRequest class</class-id> <category>instance creation</category>
+
+<body package="OAuth2">clientId: aClientId secret: aClientSecret 	^ self new clientId: aClientId;		clientSecret: aClientSecret;		yourself</body>
+</methods>
+
+<methods>
+<class-id>Net.HttpRequest</class-id> <category>accessing</category>
+
+<body package="OAuth2">oauth2FormData: aDictionary 	" URL-encode data "	| stream first |	stream := String new writeStream.	first := true.	aDictionary keysAndValuesDo: 		[: k : v |			first 				ifTrue: [ first := false ]				ifFalse: [ stream nextPut: $&amp; ].			stream nextPutAll: ( OS.URL encode: k displayString); nextPut: $=; nextPutAll: ( OS.URL encode: v displayString)		].	self contents: stream contents.	self contentType: MimeTypeDescriptor contentTypeFormData charset: 'utf-8'.</body>
+</methods>
+
+<methods>
+<class-id>Net.AuthenticationValue</class-id> <category>parsing</category>
+
+<body package="OAuth2">oauth2Data	" a copy of the original implementation of #parseBearerDataFrom: 	(which we patched because it broke other kind of tokens, e.g. JWT) "		| paramName pos paramVal scanner oauthData |		scanner := self scannerOn: self data readStream.	pos := scanner position.	oauthData := Dictionary new.	scanner atEnd ifFalse: [		scanner			tokenizeList: [				scanner skipWhiteSpace.				paramName := scanner nextToken.				scanner skipWhiteSpace.				( scanner nextToken = $=) ifFalse: [					^(InvalidHeaderField 						errorDescription:  (#WrongBearerParameter &lt;&lt; #net &gt;&gt; 'Wrong Bearer parameter')						source: scanner asStream 					errorPosition: pos ) raise].				paramVal := scanner nextToken.				oauthData at: paramName put: paramVal.				] 			separatedBy: [scanner token == $, ] ].		^ oauthData</body>
+</methods>
+
+<do-it>"Imported Classes:"</do-it>
+
+<do-it>self error: 'Attempting to file-in parcel imports.  Choose terminate or close'</do-it>
+
+<class>
+<name>Object</name>
+<environment>Core</environment>
+<super></super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category>Kernel-Objects</category>
+<attributes>
+<package>Kernel-Objects</package>
+</attributes>
+</class>
+
+<class>
+<name>HttpRequest</name>
+<environment>Net</environment>
+<super>Net.HttpEntity</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars>requestLine </inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category>Net-HTTP-Support</category>
+<attributes>
+<package>HTTP</package>
+</attributes>
+</class>
+
+<class>
+<name>AuthenticationValue</name>
+<environment>Net</environment>
+<super>Net.HeaderFieldValue</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars>data realm </inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category>HTTP</category>
+<attributes>
+<package>HTTP</package>
+</attributes>
+</class>
+
+<class>
+<name>Error</name>
+<environment>Core</environment>
+<super>Core.Exception</super>
+<private>false</private>
+<indexed-type>none</indexed-type>
+<inst-vars></inst-vars>
+<class-inst-vars></class-inst-vars>
+<imports></imports>
+<category>Kernel-Exception Handling</category>
+<attributes>
+<package>Kernel-Exception Handling</package>
+</attributes>
+</class>
+
+</st-source>
